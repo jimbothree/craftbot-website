@@ -1,7 +1,3 @@
-<form [formGroup]="connectionForm" (ngSubmit)="onSubmit()">
-  <mat-form-field>
-    <input matInput placeholder="API Key" formControlName="apiKey">
-  </mat-form-field>
-
-  <button mat-raised-button [disabled]="connectionForm.invalid">Save</button>
-</form>
+<mat-form-field>
+  <input matInput placeholder="API Key" [formControl]="apiKeyControl">
+</mat-form-field>

@@ -1,31 +1,43 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Config } from '@app/core/models/config.model';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Validators, FormControl } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-connection-settings',
   templateUrl: './connection-settings.component.html',
   styleUrls: ['./connection-settings.component.scss']
 })
-export class ConnectionSettingsComponent implements OnInit {
-  connectionForm: FormGroup;
-  formLoaded = false;
+export class ConnectionSettingsComponent implements OnInit, OnDestroy {
+  private _apiKey: string;
 
-  constructor(
-    private readonly fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) private readonly data: Config
-  ) { }
+  @Output()
+  apiKeyChange = new EventEmitter<string>();
 
-  ngOnInit() {
-    console.log(this.data);
-    this.connectionForm = this.fb.group({
-      apiKey: [this.data.API_KEY, Validators.required]
-    });
+  @Input()
+  get apiKey(): string { return this._apiKey; }
+  set apiKey(val: string) {
+    this._apiKey = val;
+    this.apiKeyChange.emit(this._apiKey);
   }
 
-  onSubmit() {
+  apiKeyControl: FormControl;
 
+  private ngUnsubscribe = new Subject<void>();
+
+  constructor() { }
+
+  ngOnInit() {
+    this.apiKeyControl = new FormControl(this.apiKey, [Validators.required]);
+    this.apiKeyControl
+      .valueChanges
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(val => this.apiKey = val);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

@@ -4,7 +4,9 @@ import { Config } from '@app/core/models/config.model';
 export enum ConfigActionTypes {
   Load = '[Config] load',
   LoadSuccess = '[Config] load success',
-  OpenSettings = '[Config] open settings'
+  OpenSettings = '[Config] open settings',
+  Save = '[Config] save',
+  SaveSuccess = '[Config] save success'
 }
 
 export class ConfigLoad implements Action {
@@ -21,7 +23,21 @@ export class ConfigOpenSettings implements Action {
   readonly type = ConfigActionTypes.OpenSettings;
 }
 
+export class ConfigSave implements Action {
+  readonly type = ConfigActionTypes.Save;
+
+  constructor(public payload: Config) { }
+}
+
+export class ConfigSaveSuccess implements Action {
+  readonly type = ConfigActionTypes.SaveSuccess;
+
+  constructor(public payload: Config) { }
+}
+
 export type ConfigAction =
   ConfigLoad |
   ConfigLoadSuccess |
-  ConfigOpenSettings;
+  ConfigOpenSettings |
+  ConfigSave |
+  ConfigSaveSuccess;
